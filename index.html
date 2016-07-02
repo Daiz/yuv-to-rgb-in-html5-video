@@ -1,0 +1,266 @@
+<html>
+	<head>
+		<title>YUV to RGB conversion test page</title>
+		<style>
+			.test {
+				margin: 8px;
+				border: 2px solid #555599;
+				border-radius: 8px;
+				padding: 4px 8px;
+				width: 700px;
+			}
+			.colors {
+				position: relative;
+				width: 45px;
+				display: inline-block;
+			}
+			.colors .r, .colors .g, .colors .b, .colors .y {
+				width: 45px;
+				height: 45px;
+				display: block;
+			}
+			
+			.r { background-color: #FF0000; }
+			.g { background-color: #00FF00; }
+			.b { background-color: #0000FF; }
+			.y { background-color: #FFFF00; }
+
+			.colors, .video, .result {
+				width: auto;
+				text-align: center;
+				display: inline-block;
+				margin-left: 4px;
+				float: left;
+			}
+
+			.frame {
+				position: relative;
+				width: 320px;
+				height: 180px;
+			}
+			.frame video, .frame img {
+				position: absolute;
+				top: 0px;
+				left: 0;
+				width: 320px;
+				height: 180px;
+				overflow: hidden;
+			}
+			h1 {
+				font-family: Verdana;
+				font-size: 30px;
+				padding-left: 8px;
+				margin: 8px;
+			}
+			h1 code {
+				font-size: 1em;
+			}
+			h2 {
+				font-family: Verdana;
+				margin: 8px 4px;
+				padding-left: 8px;
+				border-left: 8px solid #CCCCEE;
+			}
+			h3 {
+				font-family: Verdana;
+				font-size: 0.9em;
+				width: 100%;
+				border-bottom: 1px solid #DDDDFF;
+				text-align: center;
+				margin: 0;
+				padding: 2px;
+				margin-bottom: 4px;
+			}
+		</style>
+		<script src="htmlparser.js"></script>
+		<script>
+			// var test = HTMLtoDOM("<b>This is bold.</b><i>This is italic.</i>");
+			// console.log(test);
+		</script>
+	</head>
+	<body>
+		<h1>YUV to RGB conversion in HTML5 <code>&lt;video&gt;</code></h1>
+		<div class="test">
+			<h2>Test case: H.264, HD, BT.709, tagged BT.709</h2>
+			<div class="colors">
+				<h3>RGB</h3>
+				<div class="r">&nbsp;</div>
+				<div class="g">&nbsp;</div>
+				<div class="b">&nbsp;</div>
+				<div class="y">&nbsp;</div>
+			</div>
+			<div class="video">
+				<h3>Result</h3>
+				<div class="frame">
+					<video src="test/hd-bt709-tagged-bt709.mp4" type="video/mp4" width="320" height="180">
+					</video>
+					<img src="test/pat-correct.png" width="320" height="180" alt="" />
+				</div>
+			</div>
+			<div class="result">
+				<h3>Expected</h3>
+				<img src="test/res-correct.png" width="320" height="180" alt="" />
+			</div>
+			<br style="clear: both;">
+		</div>
+		<button id="prev">Previous test case</button>
+		<button id="next">Next test case</button>
+		</div>
+		<script>
+			var tests = [
+				{
+					title: "H.264, HD, BT.709, tagged BT.709",
+					video: "hd-bt709-tagged-bt709", type: "mp4",
+					result: "correct" 
+				},
+				{
+					title: "H.264, HD, BT.709, tagged BT.601",
+					video: "hd-bt709-tagged-bt601", type: "mp4",
+					result: "709as601" 
+				},
+				{
+					title: "H.264, HD, BT.709, untagged",
+					video: "hd-bt709-untagged", type: "mp4",
+					result: "correct" 
+				},
+				{
+					title: "H.264, HD, BT.601, tagged BT.601",
+					video: "hd-bt601-tagged-bt601", type: "mp4",
+					result: "correct" 
+				},
+				{
+					title: "H.264, HD, BT.601, tagged BT.709",
+					video: "hd-bt601-tagged-bt709", type: "mp4",
+					result: "601as709" 
+				},
+				{
+					title: "H.264, HD, BT.601, untagged",
+					video: "hd-bt601-untagged", type: "mp4",
+					result: "601as709" 
+				},
+				{
+					title: "H.264, SD, BT.601, tagged BT.601",
+					video: "sd-bt601-tagged-bt601", type: "mp4",
+					result: "correct" 
+				},
+				{
+					title: "H.264, SD, BT.601, tagged BT.709",
+					video: "sd-bt601-tagged-bt709", type: "mp4",
+					result: "601as709" 
+				},
+				{
+					title: "H.264, SD, BT.601, untagged",
+					video: "sd-bt601-untagged", type: "mp4",
+					result: "correct" 
+				},
+				{
+					title: "H.264, SD, BT.709, tagged BT.709",
+					video: "sd-bt709-tagged-bt709", type: "mp4",
+					result: "correct" 
+				},
+				{
+					title: "H.264, SD, BT.709, tagged BT.601",
+					video: "sd-bt709-tagged-bt601", type: "mp4",
+					result: "709as601" 
+				},
+				{
+					title: "H.264, SD, BT.709, untagged",
+					video: "sd-bt709-untagged", type: "mp4",
+					result: "709as601" 
+				},
+				{
+					title: "H.264, 1024x576, BT.601",
+					video: "mhd-bt601", type: "mp4",
+					result: "correct" 
+				},
+				{
+					title: "H.264, 1024x576, BT.709",
+					video: "mhd-bt709", type: "mp4",
+					result: "correct" 
+				},
+				{
+					title: "VP8, HD, BT.601",
+					video: "hd-bt601", type: "webm",
+					result: "correct" 
+				},
+				{
+					title: "VP8, HD, BT.709",
+					video: "hd-bt709", type: "webm",
+					result: "709as601" 
+				},
+				{
+					title: "VP8, SD, BT.601",
+					video: "sd-bt601", type: "webm",
+					result: "correct" 
+				},
+				{
+					title: "VP8, SD, BT.709",
+					video: "sd-bt709", type: "webm",
+					result: "709as601" 
+				},
+				{
+					title: "Theora, HD, BT.601",
+					video: "hd-bt601", type: "ogv",
+					result: "correct" 
+				},
+				{
+					title: "Theora, HD, BT.709",
+					video: "hd-bt709", type: "ogv",
+					result: "709as601" 
+				},
+				{
+					title: "Theora, SD, BT.601",
+					video: "sd-bt601", type: "ogv",
+					result: "correct" 
+				},
+				{
+					title: "Theora, SD, BT.709",
+					video: "sd-bt709", type: "ogv",
+					result: "709as601" 
+				},
+			];
+
+			var d = document,
+					t = d.querySelector('h2'),
+					v = d.querySelector('video'),
+					p = d.querySelector('.video img'),
+					r = d.querySelector('.result img'),
+					index = 0,
+					prev = d.querySelector('#prev'),
+					next = d.querySelector('#next');
+
+			prev.addEventListener('click',prevCase,false);
+			next.addEventListener('click',nextCase,false);
+
+			function switchCase() {
+				var test = tests[index];
+				t.textContent = test.title;
+				v.src = "test/" + test.video + "." + test.type;
+				v.type =  "video/" + (test.type === "ogv" ? "ogg" : test.type);
+				if(v.canPlayType(v.type)) {
+					p.src = "test/pat-correct.png";
+				} else {
+					p.src = "test/unsupported.png";
+				}
+				r.src = "test/res-" + test.result + ".png";
+			}
+
+			function prevCase() {
+				index--;
+				if(index < 0) {
+					index = tests.length - 1;
+				}
+				switchCase();
+			}
+
+			function nextCase() {
+				index++;
+				if(index === tests.length) {
+					index = 0;
+				}
+				switchCase();
+			}
+			switchCase();
+		</script>
+	</body>
+</html>
